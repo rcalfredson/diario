@@ -8,6 +8,8 @@ const basePath = process.env.BASE_PATH;
 
 app.use(morgan('short'));
 
+app.use('/meta', express.static(`${basePath}/meta`));
+
 app.get('/audio/:fileID/:albumID*?', async (req, res) => {
   let readStream;
   const filePath = `${basePath}/Albums/${req.params.albumID}/${req.params.fileID}.mp3`;
