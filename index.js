@@ -1,9 +1,12 @@
 const fs = require('fs');
 const stream = require('stream');
 const express = require('express');
+const morgan = require('morgan');
 const app = express();
 const port = process.env.PORT || 3000;
 const basePath = process.env.BASE_PATH;
+
+app.use(morgan('short'));
 
 app.get('/audio/:fileID/:albumID*?', async (req, res) => {
   let readStream;
