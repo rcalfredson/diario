@@ -28,26 +28,24 @@ app.get('/meta/music/artists', async (_, res) => {
   res.send(fs.readdirSync(`${basePath}/meta/Artists`, { withFileTypes: true })
       .filter(dirent => dirent.isDirectory())
       .map(dirent => dirent.name))
-})
+});
 
-app.get('/meta/music/albums', async (_, res) => {  
-  res.send(Object.keys(glob.GlobSync(`${basePath}/meta/Artists/**/*`, {nodir: true}).matches[0]).map(match => {
+function globAlbums() {
+  return Object.keys(glob.GlobSync(`${basePath}/meta/Artists/**/*`, {nodir: true}).matches[0]).map(match => {
     const dirName = path.dirname(match).split('/');
     const artist = dirName[dirName.length - 1];
     return {artist: artist, name: path.basename(match)}
-  }));
+  });
+}
+
+app.get('/meta/music/albums', async (_, res) => {  
+  res.send(globAlbums());
 });
 
 app.get('/meta/music/songs', async (req, res) => {
   let allTracks = [];
-  const albums = glob.GlobSync(`${basePath}/meta/Artists/**/*`, {nodir: true}).matches.map(match => {
-    const dirName = path.dirname(Object.keys(match)[0]).split('/');
 
-    const artist = dirName[dirName.length - 1];
-    return {artist: artist, name: path.basename(Object.keys(match)[0])}
-  });
-
-  albums.forEach((album) => {
+  globAlbums().forEach((album) => {
       const trackData = JSON.parse(fs.readFileSync(`${basePath}/meta/Artists/${album.artist}/${album.name}`).toString()).tracks
       trackData.forEach((track) => {
         allTracks.push({
