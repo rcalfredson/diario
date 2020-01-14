@@ -30,12 +30,11 @@ app.get('/meta/music/artists', async (_, res) => {
       .map(dirent => dirent.name))
 })
 
-app.get('/meta/music/albums', async (_, res) => {
-  res.send(glob.GlobSync(`${basePath}/meta/Artists/**/*`, {nodir: true}).matches.map(match => {
-    const dirName = path.dirname(Object.keys(match)[0]).split('/');
-
+app.get('/meta/music/albums', async (_, res) => {  
+  res.send(Object.keys(glob.GlobSync(`${basePath}/meta/Artists/**/*`, {nodir: true}).matches[0]).map(match => {
+    const dirName = path.dirname(match).split('/');
     const artist = dirName[dirName.length - 1];
-    return {artist: artist, name: path.basename(Object.keys(match)[0])}
+    return {artist: artist, name: path.basename(match)}
   }));
 });
 
