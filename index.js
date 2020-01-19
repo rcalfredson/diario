@@ -62,8 +62,8 @@ app.get('/meta/music/songs', async (req, res) => {
 });
 
 app.get('/meta/music/artist/:artistID/albums', async (req, res) => {
-  res.send(glob.GlobSync(`${basePath}/meta/Artists/${req.params.artistID}/*`, {nodir: true}).matches.map(match => {
-    return path.basename(Object.keys(match)[0])
+  res.send(Object.keys(glob.GlobSync(`${basePath}/meta/Artists/${req.params.artistID}/*`, {nodir: true}).matches[0]).map(match => {
+    return path.basename(match);
   }));
 });
 
