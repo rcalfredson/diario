@@ -30,8 +30,8 @@ app.get('/meta/music/artists', async (_, res) => {
       .map(dirent => dirent.name))
 });
 
-function globAlbums() {
-  return Object.keys(glob.GlobSync(`${basePath}/meta/Artists/**/*`, {nodir: true}).matches[0]).map(match => {
+function globAlbums(artist) {
+  return Object.keys(glob.GlobSync(`${basePath}/meta/Artists/${artist || '**'}/*`, {nodir: true}).matches[0]).map(match => {
     const dirName = path.dirname(match).split('/');
     const artist = dirName[dirName.length - 1];
     return {artist: artist, name: path.basename(match)}
@@ -42,10 +42,10 @@ app.get('/meta/music/albums', async (_, res) => {
   res.send(globAlbums());
 });
 
-app.get('/meta/music/songs', async (req, res) => {
+function getTracks(artist) {
   let allTracks = [];
 
-  globAlbums().forEach((album) => {
+  globAlbums(artist).forEach((album) => {
       const trackData = JSON.parse(fs.readFileSync(`${basePath}/meta/Artists/${album.artist}/${album.name}`).toString()).tracks
       trackData.forEach((track) => {
         allTracks.push({
@@ -58,7 +58,15 @@ app.get('/meta/music/songs', async (req, res) => {
     if (b.title > a.title) { return -1; }
     return 0;
   });
-  res.send(allTracks);
+  return allTracks;
+}
+
+app.get('/meta/music/songs', async (req, res) => {
+  res.send(getTracks());
+});
+
+app.get('/meta/music/artist/:artistID/songs', async (req, res) => {
+  res.send(getTracks(req.params.artistID));
 });
 
 app.get('/meta/music/artist/:artistID/albums', async (req, res) => {
