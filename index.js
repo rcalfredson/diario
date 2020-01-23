@@ -35,7 +35,7 @@ function globAlbums() {
     const dirName = path.dirname(match).split('/');
     const artist = dirName[dirName.length - 1];
     return {artist: artist, name: path.basename(match)}
-  });
+  }).sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 }
 
 app.get('/meta/music/albums', async (_, res) => {  
